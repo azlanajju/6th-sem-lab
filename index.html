@@ -636,7 +636,36 @@ int main(int argc, char** argv) {
     <div class="card card3">
       <div class="container">
         <textarea name="" id="myInput8" cols="90" rows="10">
-         (text here)
+         import cv2
+img = cv2.imread('images.jpg')
+# cv2.imread() -> takes an image as an input
+h, w, channels = img.shape
+half = w//2
+# this will be the first column
+left_part = img[:, :half]
+# [:,:half] means all the rows and
+# all the columns upto index half
+# this will be the second column
+right_part = img[:, half:]
+# [:,half:] means all the rows and all
+# the columns from index half to the end
+# cv2.imshow is used for displaying the image
+cv2.imshow('Left part', left_part)
+cv2.imshow('Right part', right_part)
+# this is horizontal division
+half2 = h//2
+top = img[:half2, :]
+bottom = img[half2:, :]
+cv2.imshow('Top', top)
+cv2.imshow('Bottom', bottom)
+# saving all the images
+# cv2.imwrite() function will save the image
+# into your pc
+cv2.imwrite('top.jpg', top)
+cv2.imwrite('bottom.jpg', bottom)
+cv2.imwrite('right.jpg', right_part)
+cv2.imwrite('left.jpg', left_part)
+cv2.waitKey(0)
                           </textarea>
       </div>
       <div class="details">
@@ -651,7 +680,33 @@ int main(int argc, char** argv) {
 	 <div class="card card3">
       <div class="container">
         <textarea name="" id="myInput8" cols="90" rows="10">
-         (text here)
+         import cv2
+import numpy as np
+# Load the image
+image = cv2.imread('images.jpg')
+# Define rotation angle (in degrees), scaling factor, and translation values
+rotation_angle = 45
+scaling_factor = 1.5
+translation_x = 50
+translation_y = 50
+# Get image dimensions
+height, width = image.shape[:2]
+# Define the rotation matrix
+rotation_matrix = cv2.getRotationMatrix2D((width / 2, height / 2), rotation_angle, 1)
+# Perform rotation
+rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
+# Perform scaling
+scaled_image = cv2.resize(image, None, fx=scaling_factor, fy=scaling_factor)
+# Perform translation
+translation_matrix = np.float32([[1, 0, translation_x], [0, 1, translation_y]])
+translated_image = cv2.warpAffine(image, translation_matrix, (width, height))
+# Display the original, rotated, scaled, and translated images
+cv2.imshow('Original Image', image)
+cv2.imshow('Rotated Image', rotated_image)
+cv2.imshow('Scaled Image', scaled_image)
+cv2.imshow('Translated Image', translated_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
                           </textarea>
       </div>
       <div class="details">
@@ -666,7 +721,25 @@ int main(int argc, char** argv) {
 	 <div class="card card3">
       <div class="container">
         <textarea name="" id="myInput8" cols="90" rows="10">
-         (text here)
+         import cv2
+import numpy as np
+# Read the image
+image = cv2.imread('images.jpg', cv2.IMREAD_GRAYSCALE)
+# Apply Sobel filter for edge detection
+sobel_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
+sobel_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
+sobel_edge = cv2.magnitude(sobel_x, sobel_y)
+# Apply Laplacian filter for edge detection
+laplacian_edge = cv2.Laplacian(image, cv2.CV_64F)
+# Apply Gaussian blur for texture extraction
+gaussian_blur = cv2.GaussianBlur(image, (5, 5), 0)
+# Display the original image and extracted features
+cv2.imshow('Original Image', image)
+cv2.imshow('Sobel Edge Detection', np.uint8(sobel_edge))
+cv2.imshow('Laplacian Edge Detection', np.uint8(laplacian_edge))
+cv2.imshow('Gaussian Blurred Image', gaussian_blur)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
                           </textarea>
       </div>
       <div class="details">
@@ -681,7 +754,16 @@ int main(int argc, char** argv) {
 	 <div class="card card3">
       <div class="container">
         <textarea name="" id="myInput8" cols="90" rows="10">
-         (text here)
+        import cv2
+# Read the image
+image = cv2.imread('images.jpg')
+# Apply Gaussian blur
+blurred_image = cv2.GaussianBlur(image, (15, 15), 0)
+# Display the original and blurred images
+cv2.imshow('Original Image', image)
+cv2.imshow('Blurred Image', blurred_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
                           </textarea>
       </div>
       <div class="details">
@@ -697,7 +779,22 @@ int main(int argc, char** argv) {
 	 <div class="card card3">
       <div class="container">
         <textarea name="" id="myInput8" cols="90" rows="10">
-         (text here)
+         import cv2
+# Read the image in grayscale
+image = cv2.imread('images.jpg', cv2.IMREAD_GRAYSCALE)
+# Apply binary thresholding
+ret, thresh = cv2.threshold(image, 127, 255, 0)
+# Find contours
+contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL,
+cv2.CHAIN_APPROX_SIMPLE)
+# Draw contours on a blank image
+contour_image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+cv2.drawContours(contour_image, contours, -1, (0, 255, 0), 2)
+# Display the original and contoured images
+cv2.imshow('Original Image', image)
+cv2.imshow('Contoured Image', contour_image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
                           </textarea>
       </div>
       <div class="details">
@@ -712,7 +809,24 @@ int main(int argc, char** argv) {
 	 <div class="card card3">
       <div class="container">
         <textarea name="" id="myInput8" cols="90" rows="10">
-         (text here)
+         import cv2
+# Load the pre-trained face detection classifier
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades +
+'haarcascade_frontalface_default.xml')
+# Read the input image
+image = cv2.imread('images.jpg')
+# Convert the image to grayscale
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# Detect faces in the grayscale image
+faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5,
+minSize=(30, 30))
+# Draw rectangles around the detected faces
+for (x, y, w, h) in faces:
+cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
+# Display the result
+cv2.imshow('Detected Faces', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
                           </textarea>
       </div>
       <div class="details">
