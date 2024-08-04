@@ -69,64 +69,71 @@
   <div class="card card3">
     <div class="container">
       <textarea name="" id="myInput0" cols="90" rows="10">
-        #include<GL/glut.h>
-#include <GL/freeglut.h>
-#include <stdio.h>
-
-int x1, y1, x2, y2;
-
-void setPixel(int x, int y) {
-    glBegin(GL_POINTS);
-    glVertex2i(x, y);
-    glEnd();
+       #include <GL/glut.h>
+#include <iostream>
+int x1, y1, x2, y2 ;
+void plot (int x, int y){
+glBegin(GL_POINTS);
+glVertex2i (x, y);
+glEnd ();
 }
-
-void drawLine(int x1, int y1, int x2, int y2) {
-    int dx = abs(x2 - x1), dy = abs(y2 - y1);
-    int sx = (x1 < x2) ? 1 : -1, sy = (y1 < y2) ? 1 : -1;
-    int err = dx - dy, e2;
-
-    while (1) {
-        setPixel(x1, y1);
-        if (x1 == x2 && y1 == y2) break;
-        e2 = err * 2;
-        if (e2 > -dy) { err -= dy; x1 += sx; }
-        if (e2 < dx) { err += dx; y1 += sy; }
-    }
+void bresenhamLine (){
+int dx = abs ( x2-x1);
+int dy = abs ( y2-y1);
+int slope=dy > dx ? 1:0 ;
+if (slope) {
+std :: swap (x1,y1);
+std ::swap(x2, y2);
+std :: swap (dx, dy);
 }
-
-void display() {
-    glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0, 1.0, 1.0);
-    drawLine(x1, y1, x2, y2);
-    glFlush();
+int x =x1 , y =y1;
+int p = 2 * dy - dx;
+plot(x,y);
+ for (int k = 0 ;k < dx;++k ){
+if (p < 0) {
+if (!slope)
+ x++;
+else
+y++;
+p+= 2*dy;
 }
-
-void reshape(int w, int h) {
-    glViewport(0, 0, w, h);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0, w, 0, h);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+else {
+x++;
+if (!slope)
+y++;
+else
+ x++;
+p+= 2*(dy - dx) ;
 }
-
-int main(int argc, char** argv) {
-    printf("Enter the coordinates of two points (x1, y1) and (x2, y2): ");
-    scanf("%d %d %d %d", &x1, &y1, &x2, &y2);
-
-    glutInit(&argc, argv);
-    //glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-    glutInitWindowSize(800, 600);
-    glutInitWindowPosition(100, 100);
-    glutCreateWindow("Bresenham's Line Drawing");
-    glClearColor(0.0, 0.0, 0.0, 1.0);
-    glutDisplayFunc(display);
-    glutReshapeFunc(reshape);
-    glutMainLoop();
-    return 0;
+plot(x, y);
 }
-
+}
+void display(){
+glClear(GL_COLOR_BUFFER_BIT);
+glColor3f(1.0, 1.0,1.0);
+bresenhamLine();
+glFlush();
+}
+void init() {
+glClearColor(0.0,0.0,0.0,0.0);
+glMatrixMode(GL_PROJECTION);
+gluOrtho2D (0, 500, 0,500);
+ }
+int main (int argc, char ** argv)
+{
+std::cout << "Enter the starting point (x1, y1):";
+std:: cin >> x1 >>y1;
+std::cout <<"Enter the ending point (x2, y2):";
+std:: cin >> x2 >> y2;
+glutInit(&argc,argv);
+glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
+glutInitWindowSize(500, 500);
+glutCreateWindow("Bresenham's Line Drawing");
+init();
+glutDisplayFunc(display);
+glutMainLoop();
+ return 0;
+ }
               </textarea>
               
     </div>
@@ -143,80 +150,70 @@ int main(int argc, char** argv) {
   <div class="card card2">
     <div class="container">
       <textarea name="" id="myInput1" cols="90" rows="10">
-          #include <GL/freeglut.h>
-#include <stdio.h>
-#include<math.h>
-int objectX = 300;
-int objectY = 300;
-int objectWidth = 100;
-int objectHeight = 100;
-void drawObject() {
- glBegin(GL_POLYGON);
- glVertex2i(objectX, objectY);
- glVertex2i(objectX + objectWidth, objectY);
- glVertex2i(objectX + objectWidth, objectY + objectHeight);
- glVertex2i(objectX, objectY + objectHeight);
- glEnd();
+#include <GL/glut.h>
+#include <iostream>
+float squareSize=50.0f;
+float squarePosX=250.0f, squarePosY=250.0f;
+float angle=0.0f, scale=1.0f;
+void drawSquare(){
+glPushMatrix();
+glTranslatef(squarePosX,squarePosY,0.0f);
+glRotatef(angle,1.0f,0.0f,0.0f);
+glScalef(scale,scale,1.0f);
+glBegin(GL_QUADS);
+glColor3f(1.0f,0.0f,0.0f);
+glVertex2f(-squareSize/2,-squareSize/2);
+glVertex2f(squareSize/2,-squareSize/2);
+glVertex2f(squareSize/2,squareSize/2);
+glVertex2f(-squareSize/2,squareSize/2);
+glEnd();
+glPopMatrix();
 }
-void translateObject(int dx, int dy) {
- objectX += dx;
- objectY += dy;
+void display(){
+glClear(GL_COLOR_BUFFER_BIT);
+drawSquare();
+glFlush();
 }
-void scaleObject(float scaleX, float scaleY) {
- objectWidth *= scaleX;
- objectHeight *= scaleY;
+void init(){
+glClearColor(1.0f,1.0f,1.0f,1.0f);
+glMatrixMode(GL_PROJECTION);
+gluOrtho2D(0,500,0,500);
 }
-void rotateObject(float angle) {
- float newX, newY;
- float pivotX = objectX + objectWidth / 2.0;
- float pivotY = objectY + objectHeight / 2.0;
- angle = angle * 3.14159 / 180.0;
- newX = (objectX - pivotX) * cos(angle) - (objectY - pivotY) * sin(angle) + pivotX;
- newY = (objectX - pivotX) * sin(angle) + (objectY - pivotY) * cos(angle) + pivotY;
- objectX = newX;
- objectY = newY;
-}
-void display() {
- glClear(GL_COLOR_BUFFER_BIT);
- glColor3f(1.0, 1.0, 1.0); // Set color to white
- drawObject();
- glFlush();
-}
-void reshape(int w, int h) {
- glViewport(0, 0, w, h);
- glMatrixMode(GL_PROJECTION);
- glLoadIdentity();
- gluOrtho2D(0, w, 0, h);
- glMatrixMode(GL_MODELVIEW);
- glLoadIdentity();
-}
-void keyboard(unsigned char key, int x, int y) {
- switch(key) {
- case 't':
- translateObject(20, 20);
+void keyboard(unsigned char key, int x, int y){
+switch(key){
+case 'w': squarePosY+=10.0f;
  break;
- case 's':
- scaleObject(1.1, 1.1);
+case 's': squarePosY-=10.0f;
  break;
- case 'r':
- rotateObject(30);
+case 'a': squarePosX-=10.0f;
+ break;
+case 'd': squarePosX+=10.0f;
+ break;
+case 'r': angle+=10.0f;
+ break;
+case 'e': angle-=10.0f;
+ break;
+case '+': scale+=0.1f;
+ break;
+case '-': scale-=0.1f;
+ break;
+default:
  break;
  }
- glutPostRedisplay();
+glutPostRedisplay();
 }
-int main(int argc, char** argv) {
- glutInit(&argc, argv);
- glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
- glutInitWindowSize(800, 600);
- glutInitWindowPosition(100, 100);
- glutCreateWindow("Basic Geometric Operations");
- glClearColor(0.0, 0.0, 0.0, 1.0); // Set clear color to black
- glutDisplayFunc(display);
- glutReshapeFunc(reshape);
- glutKeyboardFunc(keyboard);
- glutMainLoop();
- return 0;
+int main(int argc, char **argv){
+glutInit(&argc,argv);
+glutInitDisplayMode(GLUT_SINGLE |GLUT_RGB);
+glutInitWindowSize(500,500);
+glutCreateWindow("Geometric operations on 2D object");
+init();
+glutDisplayFunc(display);
+glutKeyboardFunc(keyboard);
+glutMainLoop();
+return 0;
 }
+
         </textarea>
     </div>
     <div class="details">
@@ -232,97 +229,126 @@ int main(int argc, char** argv) {
   <div class="card card3">
     <div class="container">
       <textarea name="" id="myInput2" cols="90" rows="10">
-        #include <GL/freeglut.h>
-#include <stdio.h>
-GLfloat angleX = 0.0;
-GLfloat angleY = 0.0;
-GLfloat angleZ = 0.0;
+       #include <GL/glut.h>
+#include <iostream>
+// Cube properties
+GLfloat cubeSize = 1.0f;
+GLfloat cubePosX = 0.0f;
+GLfloat cubePosY = 0.0f;
+GLfloat cubePosZ = -5.0f;
+GLfloat angleX = 0.0f;
+GLfloat angleY = 0.0f;
+GLfloat scale = 1.0f;
 void drawCube() {
+ glPushMatrix();
+ glTranslatef(cubePosX, cubePosY, cubePosZ);
+ glRotatef(angleX, 1.0f, 0.0f, 0.0f);
+ glRotatef(angleY, 0.0f, 1.0f, 0.0f);
+ glScalef(scale, scale, scale);
  glBegin(GL_QUADS);
  // Front face
- glColor3f(1.0, 0.0, 0.0); // Red
- glVertex3f(-1.0, -1.0, 1.0);
- glVertex3f(1.0, -1.0, 1.0);
- glVertex3f(1.0, 1.0, 1.0);
- glVertex3f(-1.0, 1.0, 1.0);
+ glColor3f(1.0f, 0.0f, 0.0f); // Red
+ glVertex3f(-cubeSize, -cubeSize, cubeSize);
+ glVertex3f(cubeSize, -cubeSize, cubeSize);
+ glVertex3f(cubeSize, cubeSize, cubeSize);
+ glVertex3f(-cubeSize, cubeSize, cubeSize);
  // Back face
- glColor3f(0.0, 1.0, 0.0); // Green
- glVertex3f(-1.0, -1.0, -1.0);
- glVertex3f(-1.0, 1.0, -1.0);
- glVertex3f(1.0, 1.0, -1.0);
- glVertex3f(1.0, -1.0, -1.0);
+ glColor3f(0.0f, 1.0f, 0.0f); // Green
+ glVertex3f(-cubeSize, -cubeSize, -cubeSize);
+ glVertex3f(-cubeSize, cubeSize, -cubeSize);
+ glVertex3f(cubeSize, cubeSize, -cubeSize);
+ glVertex3f(cubeSize, -cubeSize, -cubeSize);
  // Top face
- glColor3f(0.0, 0.0, 1.0); // Blue
- glVertex3f(-1.0, 1.0, -1.0);
- glVertex3f(-1.0, 1.0, 1.0);
- glVertex3f(1.0, 1.0, 1.0);
- glVertex3f(1.0, 1.0, -1.0);
+ glColor3f(0.0f, 0.0f, 1.0f); // Blue
+ glVertex3f(-cubeSize, cubeSize, -cubeSize);
+ glVertex3f(-cubeSize, cubeSize, cubeSize);
+ glVertex3f(cubeSize, cubeSize, cubeSize);
+ glVertex3f(cubeSize, cubeSize, -cubeSize);
  // Bottom face
- glColor3f(1.0, 1.0, 0.0); // Yellow
- glVertex3f(-1.0, -1.0, -1.0);
- glVertex3f(1.0, -1.0, -1.0);
- glVertex3f(1.0, -1.0, 1.0);
- glVertex3f(-1.0, -1.0, 1.0);
+ glColor3f(1.0f, 1.0f, 0.0f); // Yellow
+ glVertex3f(-cubeSize, -cubeSize, -cubeSize);
+ glVertex3f(cubeSize, -cubeSize, -cubeSize);
+ glVertex3f(cubeSize, -cubeSize, cubeSize);
+ glVertex3f(-cubeSize, -cubeSize, cubeSize);
  // Right face
- glColor3f(1.0, 0.0, 1.0); // Magenta
- glVertex3f(1.0, -1.0, -1.0);
- glVertex3f(1.0, 1.0, -1.0);
- glVertex3f(1.0, 1.0, 1.0);
- glVertex3f(1.0, -1.0, 1.0);
+ glColor3f(1.0f, 0.0f, 1.0f); // Magenta
+ glVertex3f(cubeSize, -cubeSize, -cubeSize);
+ glVertex3f(cubeSize, cubeSize, -cubeSize);
+ glVertex3f(cubeSize, cubeSize, cubeSize);
+ glVertex3f(cubeSize,-cubeSize, cubeSize);
  // Left face
- glColor3f(0.0, 1.0, 1.0); // Cyan
- glVertex3f(-1.0, -1.0, -1.0);
- glVertex3f(-1.0, -1.0, 1.0);
- glVertex3f(-1.0, 1.0, 1.0);
- glVertex3f(-1.0, 1.0, -1.0);
+ glColor3f(0.0f, 1.0f, 1.0f); // Cyan
+ glVertex3f(-cubeSize, -cubeSize, -cubeSize);
+ glVertex3f(-cubeSize, -cubeSize, cubeSize);
+ glVertex3f(-cubeSize, cubeSize, cubeSize);
+ glVertex3f(-cubeSize, cubeSize, -cubeSize);
  glEnd();
+ glPopMatrix();
 }
 void display() {
  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
- glLoadIdentity();
- glTranslatef(0.0, 0.0, -5.0); // Move back 5 units
- glRotatef(angleX, 1.0, 0.0, 0.0); // Rotate around x-axis
- glRotatef(angleY, 0.0, 1.0, 0.0); // Rotate around y-axis
- glRotatef(angleZ, 0.0, 0.0, 1.0); // Rotate around z-axis
  drawCube();
  glutSwapBuffers();
 }
-void reshape(int w, int h) {
- glViewport(0, 0, w, h);
+void init() {
+ glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+ glClearDepth(1.0f);
+ glEnable(GL_DEPTH_TEST);
+ glDepthFunc(GL_LEQUAL);
  glMatrixMode(GL_PROJECTION);
- glLoadIdentity();
- gluPerspective(45.0, (GLfloat)w / (GLfloat)h, 0.1, 100.0);
+ gluPerspective(45.0f, 1.0f, 0.1f, 100.0f);
  glMatrixMode(GL_MODELVIEW);
  glLoadIdentity();
 }
 void keyboard(unsigned char key, int x, int y) {
- switch(key) {
- case 'x':
- angleX += 5.0;
+ switch (key) {
+ case 'w':
+ cubePosY += 0.1f;
  break;
- case 'y':
- angleY += 5.0;
+ case 's':
+ cubePosY -= 0.1f;
  break;
- case 'z':
- angleZ += 5.0;
+ case 'a':
+ cubePosX -= 0.1f;
+ break;
+ case 'd':
+ cubePosX += 0.1f;
+ break;
+ case 'q':
+ cubePosZ -= 0.1f;
+break;
+ case 'e':
+ cubePosZ += 0.1f;
+ break;
+ case 'r':
+ angleX += 5.0f;
+ break;
+ case 't':
+ angleY += 5.0f;
+ break;
+ case '+':
+ scale += 0.1f;
+ break;
+ case '-':
+ scale -= 0.1f;
+ break;
+ default:
  break;
  }
  glutPostRedisplay();
 }
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
  glutInit(&argc, argv);
  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
- glutInitWindowSize(800, 600);
- glutInitWindowPosition(100, 100);
- glutCreateWindow("Basic Geometric Operations - 3D Cube");
- glEnable(GL_DEPTH_TEST);
- glClearColor(0.0, 0.0, 0.0, 1.0); // Set clear color to black
+ glutInitWindowSize(500, 500);
+ glutCreateWindow("Geometric Operations on 3D Objects");
+ init();
  glutDisplayFunc(display);
- glutReshapeFunc(reshape);
  glutKeyboardFunc(keyboard);
  glutMainLoop();
  return 0;
- }
+}
+
               </textarea>
     </div>
     <div class="details">
